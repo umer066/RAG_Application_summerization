@@ -17,7 +17,7 @@ EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 
 # Load embedding model
 print("Loading embedding model...")
-model = SentenceTransformer(EMBEDDING_MODEL)
+model = SentenceTransformer(EMBEDDING_MODEL, device='cpu')
 print("Model loaded successfully.")
 
 def is_system_message(text):
@@ -31,45 +31,50 @@ def is_system_message(text):
     return any(keyword.lower() in text.lower() for keyword in system_keywords)
 
 def is_date_or_time(text):
-    """ Detect timestamps or dates more safely to avoid OverflowError. """
+    """ Detect timestamps or dates. """
     try:
-        # Skip short words (like 'OK', 'I') that cannot be dates
-        if len(text) < 4:
-            return False
-        
-        # Attempt to parse as a date
-        parsed_date = dateutil.parser.parse(text, fuzzy=True)
-
-        # Ensure it's a reasonable date (ignore years > 2100 or < 1900)
-        if parsed_date.year > 2100 or parsed_date.year < 1900:
-            return False
-        
+        dateutil.parser.parse(text, fuzzy=True)
         return True
-    except (ValueError, OverflowError):
-        return False  # Ignore non-date values safely
+    except ValueError:
+        return False
 
-def clean_text(text):
-    """ Remove system messages, timestamps, and links dynamically. """
-    if is_system_message(text) or is_date_or_time(text):
-        return ""
+def clean_text(lines):
+    """ Remove system messages and intelligently associate timestamps with messages. """
+    cleaned_data = []
+    last_timestamp = None
 
-    # Remove URLs
-    text = re.sub(r"https?://\S+", "", text)
+    for line in lines:
+        line = line.strip()
+        
+        if not line:
+            continue
 
-    return text.strip()
+        if is_system_message(line):
+            continue
+
+        if is_date_or_time(line):  # Store timestamp for next message
+            last_timestamp = line
+            continue
+        
+        # Attach last timestamp to this message if exists
+        if last_timestamp:
+            line = f"{last_timestamp} - {line}"
+            last_timestamp = None  # Reset timestamp after attaching it
+
+        cleaned_data.append(line)
+
+    return cleaned_data
 
 def load_chat_data():
     """ Load chat data from a directory or a single file after cleaning. """
-    print("Cleaning the data....")
     chat_data = []
 
     if FILE_PATH and os.path.isfile(FILE_PATH):  # Case 1: Single file
         print(f"Loading chat data from file: {FILE_PATH}")
         with open(FILE_PATH, "r", encoding="utf-8") as f:
-            for line in f.readlines():
-                cleaned_line = clean_text(line.strip())
-                if cleaned_line:
-                    chat_data.append({"text": cleaned_line, "source": os.path.basename(FILE_PATH)})
+            lines = f.readlines()
+            cleaned_lines = clean_text(lines)
+            chat_data.extend([{"text": line, "source": os.path.basename(FILE_PATH)} for line in cleaned_lines])
 
     elif DATA_DIR and os.path.isdir(DATA_DIR):  # Case 2: Directory
         print(f"Loading chat data from directory: {DATA_DIR}")
@@ -77,10 +82,9 @@ def load_chat_data():
             if file_name.endswith(".txt"):
                 file_path = os.path.join(DATA_DIR, file_name)
                 with open(file_path, "r", encoding="utf-8") as f:
-                    for line in f.readlines():
-                        cleaned_line = clean_text(line.strip())
-                        if cleaned_line:
-                            chat_data.append({"text": cleaned_line, "source": file_name})
+                    lines = f.readlines()
+                    cleaned_lines = clean_text(lines)
+                    chat_data.extend([{"text": line, "source": file_name} for line in cleaned_lines])
 
     else:
         print("Error: No valid input source found. Set either DATA_DIR or FILE_PATH.")
@@ -121,7 +125,7 @@ def main():
         json.dump(metadata, f, indent=4)
     print(f"Metadata saved at: {METADATA_PATH}")
 
-    print("\n✅ Data processed, cleaned, and stored in FAISS.")
+    print("\n✅ Milestone 2 completed: Correct timestamp association and data stored.")
 
 if __name__ == "__main__":
     main()
