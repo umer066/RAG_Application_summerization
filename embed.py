@@ -60,6 +60,7 @@ def clean_text(text):
 
 def load_chat_data():
     """ Load chat data from a directory or a single file after cleaning. """
+    print("Cleaning the data....")
     chat_data = []
 
     if FILE_PATH and os.path.isfile(FILE_PATH):  # Case 1: Single file
