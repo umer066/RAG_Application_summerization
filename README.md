@@ -16,6 +16,28 @@ Ensure you have Python 3.7+ installed. Then, install the required dependencies:
 pip install faiss-cpu sentence-transformers tqdm numpy
 ```
 
+### ** Cleaning Chat Data for Embedding**  
+
+#### **📌 Overview**  
+This script processes and cleans chat data before generating embeddings. It removes system messages, timestamps, and irrelevant text to ensure only meaningful chat messages are embedded.
+
+---
+
+### **⚙️ Cleaning Process**  
+✔ **Removes system messages** (e.g., user joins, leaves, invite links, settings changes).  
+✔ **Filters out timestamps & dates** (ignores invalid years >2100 or <1900).  
+✔ **Strips unnecessary spaces & blank lines**.  
+
+
+---
+
+### **📌 Output**  
+- **Cleaned chat messages** (stored in embeddings)  
+- **Metadata file:** `metadata.json`  
+- **FAISS index file:** `vector_store.index`  
+
+🎯 **Ready for further analysis & querying!** 🚀
+
 ## Usage
 ### 1. **Embedding from a Directory**
 If you have multiple `.txt` files in a folder, set:
