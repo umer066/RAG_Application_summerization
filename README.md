@@ -13,7 +13,7 @@ This project processes chat logs, generates sentence embeddings using the `sente
 Ensure you have Python 3.7+ installed. Then, install the required dependencies:
 
 ```bash
-pip install faiss-cpu sentence-transformers tqdm numpy
+pip install -r requirements.txt
 ```
 
 ### ** Cleaning Chat Data for Embedding**  
