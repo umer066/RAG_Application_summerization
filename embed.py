@@ -30,12 +30,35 @@ def is_system_message(text):
     ]
     return any(keyword.lower() in text.lower() for keyword in system_keywords)
 
+# def is_date_or_time(text):
+#     """ Detect timestamps or dates. """
+#     try:
+#         dateutil.parser.parse(text, fuzzy=True)
+#         return True
+#     except ValueError:
+#         return False
+
 def is_date_or_time(text):
-    """ Detect timestamps or dates. """
+    """ Detect timestamps or dates while preventing false positives and overflow errors. """
+    text = text.strip()
+
+    # Skip if the text is too long to be a date
+    if len(text) > 50:  # Most date/time strings are short
+        return False
+
+    # Skip if the text contains too many digits (likely not a valid date)
+    if sum(c.isdigit() for c in text) > 8:  # More than 8 digits likely not a date
+        return False
+
     try:
-        dateutil.parser.parse(text, fuzzy=True)
+        parsed_date = dateutil.parser.parse(text, fuzzy=True)
+
+        # Ensure parsed_date is not too large (prevent overflow)
+        if parsed_date.year > 2100 or parsed_date.year < 1900:
+            return False
+
         return True
-    except ValueError:
+    except (ValueError, OverflowError):
         return False
 
 def clean_text(lines):
