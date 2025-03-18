@@ -12,9 +12,60 @@ This project processes chat logs, generates sentence embeddings using the `sente
 ## Installation
 Ensure you have Python 3.7+ installed. Then, install the required dependencies:
 
+### **1️⃣ Install Python (Skip if already installed)**  
+
+#### **Windows**  
+1. Download Python from the official site: [Python.org](https://www.python.org/downloads/windows/)  
+2. Run the installer and **check "Add Python to PATH"** before installing.  
+3. Verify installation:
+
+```bash
+   python --version
+```
+
+#### **Mac**
+1. Install using Homebrew (recommended):
+```bash
+brew install python
+```
+2. Verify installation:
+```bash
+python3 --version
+```
+
+#### **Linux (Debian/Ubuntu)**
+1. Install Python via APT:
+```bash
+sudo apt update && sudo apt install python3 python3-venv python3-pip -y
+```
+2. Verify installation:
+```bash
+python3 --version
+```
+
+
+### **Create & Activate a Virtual Environment (Just activate if already created - run second command only)** 
+
+#### Windows (CMD or PowerShell)
+```bash
+python -m venv venv
+venv\Scripts\activate
+```
+
+#### Mac & Linux (Terminal)
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+
+###  Install Dependencies
+Once the virtual environment is activated, install the required packages:
+
 ```bash
 pip install -r requirements.txt
 ```
+
 
 ### ** Cleaning Chat Data for Embedding**  
 
@@ -38,9 +89,10 @@ This script processes and cleans chat data before generating embeddings. It remo
 
 🎯 **Ready for further analysis & querying!** 🚀
 
-## Usage
+## Usage, set in *embed.py*
+
 ### 1. **Embedding from a Directory**
-If you have multiple `.txt` files in a folder, set:
+If you have multiple `.txt` files in a folder:
 
 Example:
 ```python
@@ -61,7 +113,7 @@ FILE_PATH = "chat_log.txt"
 Once configured, run the script:
 
 ```bash
-python embedding.py
+python embed.py
 ```
 
 ## Output Files
