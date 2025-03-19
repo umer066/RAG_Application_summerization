@@ -148,7 +148,7 @@ def main():
         json.dump(metadata, f, indent=4)
     print(f"Metadata saved at: {METADATA_PATH}")
 
-    print("\n✅ Milestone 2 completed: Correct timestamp association and data stored.")
+    print("\n✅ Milestone 1 completed: Correct timestamp association and data stored.")
 
 if __name__ == "__main__":
     main()
